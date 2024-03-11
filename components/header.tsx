@@ -15,13 +15,13 @@ const Header = () => {
       <div className='flex items-center justify-end space-x-5 w-1/3 pr-5'>
         <Button
           variant='secondary'
-          className=' rounded-xl w-1/3 h-12 text-base transition hover:origin-top-left hover:rotate-6 bg-gradient-to-r from-indigo-300 to-sky-500'
+          className='hidden lg:block rounded-xl w-1/3 h-12 text-base transition hover:origin-top-left hover:rotate-6 bg-gradient-to-r from-indigo-300 to-sky-500'
         >
           Login
         </Button>
         <Button
           variant='secondary'
-          className=' rounded-xl w-1/3 h-12 text-base transition hover:origin-top-left hover:rotate-6 bg-gradient-to-r from-indigo-300 to-sky-500'
+          className='hidden lg:block rounded-xl w-1/3 h-12 text-base transition hover:origin-top-left hover:rotate-6 bg-gradient-to-r from-indigo-300 to-sky-500'
         >
           Signup
         </Button>

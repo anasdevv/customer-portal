@@ -2,14 +2,14 @@
 
 import ImageSlider from '../components/image.slider';
 import { SparklesCore } from '../components/sparkles';
-import AnimationRevealPage from './helpers/AnimationRevealPage';
-import Header from '../components/header';
+import AnimationRevealPage from '../helpers/AnimationRevealPage';
+import Header from '../components/home/header';
 import { Spotlight } from '@/components/spotlight';
 import { Button } from '@/components/ui/button';
-import { Features } from '@/components/features';
+import { Features } from '@/components/home/features';
 import { RoomsPreview } from '@/components/RoomsPreview';
-import { FAQs } from '@/components/faqs';
-import { Footer } from '@/components/footer';
+import { FAQs } from '@/components/home/faqs';
+import { Footer } from '@/components/home/footer';
 export default function Home() {
   return (
     <>

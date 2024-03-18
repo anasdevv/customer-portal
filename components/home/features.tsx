@@ -85,7 +85,7 @@ export const Features = () => {
       <div className='max-w-screen-xl mx-auto py-20 lg:py-24'>
         <div className='mt-10 flex flex-col items-center lg:items-stretch lg:flex-row flex-wrap lg:justify-center max-w-screen-lg mx-auto'>
           {facilities.map((f) => (
-            <FeatureCard {...f} />
+            <FeatureCard {...f} key={f.title} />
           ))}
         </div>
       </div>

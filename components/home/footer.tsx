@@ -31,6 +31,7 @@ export const Footer = () => {
           <div className='mt-10 flex'>
             {Links.map(({ icon, url }) => (
               <Link
+                key={url}
                 className='cursor-pointer flex text-gray-100 hover:text-gray-500 transition duration-300 mx-4 w-8 h-8 items-center justify-center bg-zinc-900 p-5 rounded-full'
                 href={url}
               >

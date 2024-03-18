@@ -1,6 +1,8 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import QueryProiver from './providers/react-query';
+import { Toaster } from '@/components/ui/toaster';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -14,9 +16,15 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // console.log(children);
   return (
     <html lang='en'>
-      <body className={inter.className + ' bg-zinc-900'}>{children}</body>
+      <QueryProiver>
+        <body className={' bg-zinc-900'}>
+          <main>{children}</main>
+          <Toaster />
+        </body>
+      </QueryProiver>
     </html>
   );
 }

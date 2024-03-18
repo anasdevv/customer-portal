@@ -49,7 +49,11 @@ export const FAQs = () => {
           <div className=' bg-slate-50 p-5 mt-6 rounded'>
             <Accordion type='single' collapsible className='w-full'>
               {defaultFaqs.map(({ answer, question }, i) => (
-                <AccordionItem value={`item-${i}`} className=' font-semibold'>
+                <AccordionItem
+                  value={`item-${i}`}
+                  key={i}
+                  className=' font-semibold'
+                >
                   <AccordionTrigger>{question}</AccordionTrigger>
                   <AccordionContent>{answer}</AccordionContent>
                 </AccordionItem>

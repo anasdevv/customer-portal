@@ -6,6 +6,7 @@ import { ScrollArea } from '../ui/scroll-area';
 import { MdOutlineStar } from 'react-icons/md';
 import { AiFillDollarCircle } from 'react-icons/ai';
 import { Button } from '../ui/button';
+import { BookRoom } from './form/book';
 
 export const Rooms = () => {
   return (
@@ -36,7 +37,7 @@ export const Rooms = () => {
 };
 const Room = () => (
   <div className='p-1 '>
-    <Card className='bg-slate-800 border-none pb-2'>
+    <Card className='bg-slate-800 border-none '>
       <CardHeader className='h-[15rem]'>
         <Image
           width={500}
@@ -50,7 +51,7 @@ const Room = () => (
           className='object-cover rounded-xl h-full w-full  object-center'
         />
       </CardHeader>
-      <CardContent className='flex items-start justify-center p-3'>
+      <CardContent className='flex  items-start justify-center p-3'>
         <div className='flex flex-col w-full px-6 space-y-3'>
           <div className='flex items-start justify-between w-full'>
             <h1 className='text-2xl text-gray-300 font-bold'>Room</h1>
@@ -86,10 +87,8 @@ const Room = () => (
             porro, quidem quasi dolorem aut voluptatum quisquam perferendis
             mollitia ratione veniam consequatur eum at?
           </p>
-          <div className='w-full flex items-center justify-center'>
-            <Button className=' bg-gradient-to-r from-indigo-600 to-sky-300 w-full px-9 py-7 rounded-2xl text-slate-50 font-semibold text-xl hover:bg-indigo-500'>
-              Book now
-            </Button>
+          <div className='w-full flex items-center justify-center '>
+            <BookRoom />
           </div>
         </div>
       </CardContent>

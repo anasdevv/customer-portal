@@ -6,7 +6,7 @@ import { ScrollArea } from '../ui/scroll-area';
 import { MdOutlineStar } from 'react-icons/md';
 import { AiFillDollarCircle } from 'react-icons/ai';
 import { Button } from '../ui/button';
-import { BookRoom } from './form/book';
+import { BookRoomForm } from '../forms/book-room-form';
 
 export const Rooms = () => {
   return (
@@ -88,7 +88,7 @@ const Room = () => (
             mollitia ratione veniam consequatur eum at?
           </p>
           <div className='w-full flex items-center justify-center '>
-            <BookRoom />
+            <BookRoomForm />
           </div>
         </div>
       </CardContent>

@@ -12,7 +12,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 
-export function BookRoom() {
+export function BookRoomForm() {
   return (
     <Sheet>
       <SheetTrigger asChild>

@@ -1,3 +1,5 @@
+import { BookingHistory } from '@/components/booking-history';
+import { OrderFood } from '@/components/order-food';
 import { Rooms } from '@/components/rooms';
 import { Tabs } from '@/components/ui/tabs';
 import Image from 'next/image';
@@ -22,24 +24,14 @@ export default function Page() {
       content: <Rooms />,
     },
     {
-      title: 'Services',
-      value: 'services',
-      content: (
-        <div className='w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br  from-slate-700 to-slate-950'>
-          <p>Services tab</p>
-          <DummyContent />
-        </div>
-      ),
+      title: 'Order Food',
+      value: 'order-food',
+      content: <OrderFood />,
     },
     {
-      title: 'Playground',
-      value: 'playground',
-      content: (
-        <div className='w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-purple-700 to-violet-900'>
-          <p>Playground tab</p>
-          <DummyContent />
-        </div>
-      ),
+      title: 'Booking History',
+      value: 'booking-history',
+      content: <BookingHistory />,
     },
     {
       title: 'Content',

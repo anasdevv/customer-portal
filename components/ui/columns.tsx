@@ -8,7 +8,14 @@ import { Checkbox } from './checkbox';
 import { Badge } from './badge';
 import { Task } from '../booking-history/data/schema';
 import { labels, priorities, statuses } from '../booking-history/data/data';
-export const columns: ColumnDef<Task>[] = [
+interface IBooking {
+  id: string;
+  roomTitle: string;
+  status: string;
+  price: string;
+  duration: string;
+}
+export const columns: ColumnDef<IBooking>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -36,25 +43,25 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'id',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Task' />
+      <DataTableColumnHeader column={column} title='Id' />
     ),
     cell: ({ row }) => <div className='w-[80px]'>{row.getValue('id')}</div>,
     enableSorting: false,
     enableHiding: false,
   },
   {
-    accessorKey: 'title',
+    accessorKey: 'roomTitle',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Title' />
     ),
     cell: ({ row }) => {
-      const label = labels.find((label) => label.value === row.original.label);
-
+      // const label = labels.find((label) => label.value === row.original.label);
+      console.log('roww ', row);
       return (
         <div className='flex space-x-2'>
-          {label && <Badge variant='outline'>{label.label}</Badge>}
+          {/* {label && <Badge variant='outline'>{label.label}</Badge>} */}
           <span className='max-w-[500px] truncate font-medium'>
-            {row.getValue('title')}
+            {row.getValue('roomTitle')}
           </span>
         </div>
       );
@@ -66,10 +73,11 @@ export const columns: ColumnDef<Task>[] = [
       <DataTableColumnHeader column={column} title='Status' />
     ),
     cell: ({ row }) => {
+      const s: string = row.getValue('status');
       const status = statuses.find(
-        (status) => status.value === row.getValue('status')
+        (status) => status.value === s.toLowerCase()
       );
-
+      console.log(status, '  rr ', row.getValue('status'));
       if (!status) {
         return null;
       }
@@ -88,25 +96,46 @@ export const columns: ColumnDef<Task>[] = [
     },
   },
   {
-    accessorKey: 'priority',
+    accessorKey: 'price',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Priority' />
+      <DataTableColumnHeader column={column} title='Price' />
     ),
     cell: ({ row }) => {
-      const priority = priorities.find(
-        (priority) => priority.value === row.getValue('priority')
-      );
+      const price: string = row.getValue('price');
 
-      if (!priority) {
+      if (!price) {
         return null;
       }
 
       return (
         <div className='flex items-center'>
-          {priority.icon && (
-            <priority.icon className='mr-2 h-4 w-4 text-muted-foreground' />
-          )}
-          <span>{priority.label}</span>
+          <span className='mr-2 h-4 w-4 text-muted-foreground'> $</span>
+
+          <span>{price}</span>
+        </div>
+      );
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
+  },
+  {
+    accessorKey: 'duration',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Duration' />
+    ),
+    cell: ({ row }) => {
+      const duration: string = row.getValue('duration');
+
+      if (!duration) {
+        return null;
+      }
+
+      return (
+        <div className='flex items-center'>
+          <span className='mr-2 h-4 w-4 text-muted-foreground'> $</span>
+
+          <span>{duration}</span>
         </div>
       );
     },

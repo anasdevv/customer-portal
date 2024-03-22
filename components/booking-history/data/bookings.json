@@ -1,0 +1,142 @@
+[
+  {
+    "id": "1",
+    "roomTitle": "Luxury Suite",
+    "status": "Confirmed",
+    "price": "$500",
+    "duration": "3 nights"
+  },
+  {
+    "id": "2",
+    "roomTitle": "Standard Room",
+    "status": "Pending",
+    "price": "$200",
+    "duration": "2 nights"
+  },
+  {
+    "id": "3",
+    "roomTitle": "Family Villa",
+    "status": "Cancelled",
+    "price": "$800",
+    "duration": "5 nights"
+  },
+  {
+    "id": "4",
+    "roomTitle": "Executive Suite",
+    "status": "Confirmed",
+    "price": "$700",
+    "duration": "4 nights"
+  },
+  {
+    "id": "5",
+    "roomTitle": "Deluxe Room",
+    "status": "Confirmed",
+    "price": "$300",
+    "duration": "2 nights"
+  },
+  {
+    "id": "6",
+    "roomTitle": "Beachfront Bungalow",
+    "status": "Pending",
+    "price": "$600",
+    "duration": "3 nights"
+  },
+  {
+    "id": "7",
+    "roomTitle": "Penthouse Apartment",
+    "status": "Confirmed",
+    "price": "$1000",
+    "duration": "7 nights"
+  },
+  {
+    "id": "8",
+    "roomTitle": "Mountain View Cabin",
+    "status": "Confirmed",
+    "price": "$400",
+    "duration": "2 nights"
+  },
+  {
+    "id": "9",
+    "roomTitle": "Economy Room",
+    "status": "Cancelled",
+    "price": "$100",
+    "duration": "1 night"
+  },
+  {
+    "id": "10",
+    "roomTitle": "Suite with Jacuzzi",
+    "status": "Confirmed",
+    "price": "$900",
+    "duration": "5 nights"
+  },
+  {
+    "id": "11",
+    "roomTitle": "Budget Dormitory",
+    "status": "Pending",
+    "price": "$50",
+    "duration": "1 night"
+  },
+  {
+    "id": "12",
+    "roomTitle": "Village Cottage",
+    "status": "Confirmed",
+    "price": "$250",
+    "duration": "2 nights"
+  },
+  {
+    "id": "13",
+    "roomTitle": "Riverside Chalet",
+    "status": "Confirmed",
+    "price": "$350",
+    "duration": "3 nights"
+  },
+  {
+    "id": "14",
+    "roomTitle": "Executive Floor Suite",
+    "status": "Pending",
+    "price": "$800",
+    "duration": "4 nights"
+  },
+  {
+    "id": "15",
+    "roomTitle": "Ocean View Room",
+    "status": "Cancelled",
+    "price": "$400",
+    "duration": "2 nights"
+  },
+  {
+    "id": "16",
+    "roomTitle": "Skyline Loft",
+    "status": "Confirmed",
+    "price": "$600",
+    "duration": "3 nights"
+  },
+  {
+    "id": "17",
+    "roomTitle": "Private Villa",
+    "status": "Confirmed",
+    "price": "$1200",
+    "duration": "7 nights"
+  },
+  {
+    "id": "18",
+    "roomTitle": "Studio Apartment",
+    "status": "Confirmed",
+    "price": "$200",
+    "duration": "1 night"
+  },
+  {
+    "id": "19",
+    "roomTitle": "Tropical Bungalow",
+    "status": "Pending",
+    "price": "$700",
+    "duration": "4 nights"
+  },
+  {
+    "id": "20",
+    "roomTitle": "Country House",
+    "status": "Confirmed",
+    "price": "$500",
+    "duration": "3 nights"
+  }
+]

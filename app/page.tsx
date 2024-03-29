@@ -10,6 +10,7 @@ import { Features } from '@/components/home/features';
 import { RoomsPreview } from '@/components/RoomsPreview';
 import { FAQs } from '@/components/home/faqs';
 import { Footer } from '@/components/home/footer';
+import Link from 'next/link';
 export default function Home() {
   return (
     <>
@@ -54,8 +55,11 @@ export default function Home() {
                     </div>
                   </div>
                   <div className='flex items-center justify-center w-full'>
-                    <Button className=' bg-gradient-to-r from-indigo-400 to-sky-300 w-1/2 lg:p-8 p-4 text-foreground font-semibold lg:text-xl text-base hover:bg-indigo-500'>
-                      Browse rooms
+                    <Button
+                      asChild
+                      className=' bg-gradient-to-r from-indigo-400 to-sky-300 w-1/2 lg:p-8 p-4 text-foreground font-semibold lg:text-xl text-base hover:bg-indigo-500'
+                    >
+                      <Link href='/rooms'>Browse Rooms</Link>
                     </Button>
                   </div>
                 </div>

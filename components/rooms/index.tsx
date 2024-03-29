@@ -15,7 +15,7 @@ export const Rooms = () => {
 
       <div className='flex-1 flex-col  space-y-6 w-full h-full p-2 rounded-lg overflow-y-auto sticky'>
         <ScrollArea className='h-[40rem]'>
-          <div className='grid grid-cols-3 gap-x-6'>
+          <div className='grid lg:grid-cols-3 grid:cols-2 sm:grid-cols-1 gap-x-6'>
             {Array.from({
               length: 3,
             }).map((_, i) => (

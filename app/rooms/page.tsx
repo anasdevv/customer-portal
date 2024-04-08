@@ -1,5 +1,6 @@
 import { BookingHistory } from '@/components/booking-history';
 import { OrderFood } from '@/components/order-food';
+import Room from '@/components/room';
 import { Rooms } from '@/components/rooms';
 import { Tabs } from '@/components/ui/tabs';
 import Image from 'next/image';
@@ -34,14 +35,9 @@ export default function Page() {
       content: <BookingHistory />,
     },
     {
-      title: 'Content',
-      value: 'content',
-      content: (
-        <div className='w-full overflow-hidden relative h-full rounded-2xl p-10 text-xl md:text-4xl font-bold text-white bg-gradient-to-br from-purple-700 to-violet-900'>
-          <p>Content tab</p>
-          <DummyContent />
-        </div>
-      ),
+      title: 'RoomDetails',
+      value: 'room-details',
+      content: <Room />,
     },
     {
       title: 'Random',

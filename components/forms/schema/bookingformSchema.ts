@@ -11,7 +11,7 @@ export const BookingformSchema = z.object({
     }),
     title: z.string(),
   }),
-  descritption: z.string(),
+  descritption: z.string().trim(),
   date: z
     .object({
       from: z.date(),

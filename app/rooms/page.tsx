@@ -4,6 +4,7 @@ import Room from '@/components/room';
 import { Rooms } from '@/components/rooms';
 import { Tabs } from '@/components/ui/tabs';
 import Image from 'next/image';
+import { Suspense } from 'react';
 
 const DummyContent = () => {
   return (
@@ -16,13 +17,23 @@ const DummyContent = () => {
     />
   );
 };
-
-export default function Page() {
+export type PageProps = {
+  params?: {
+    [key: string]: string;
+  };
+  searchParams: { [key: string]: string | undefined };
+};
+export default function Page(props: PageProps) {
+  console.log(props);
   const tabs = [
     {
       title: 'Rooms',
       value: 'rooms',
-      content: <Rooms />,
+      content: (
+        <Suspense fallback={<div>loading....</div>}>
+          <Rooms searchParams={props.searchParams} />
+        </Suspense>
+      ),
     },
     {
       title: 'Order Food',

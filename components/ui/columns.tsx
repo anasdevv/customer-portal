@@ -56,7 +56,7 @@ export const columns: ColumnDef<IBooking>[] = [
     ),
     cell: ({ row }) => {
       // const label = labels.find((label) => label.value === row.original.label);
-      console.log('roww ', row);
+      // console.log('roww ', row);
       return (
         <div className='flex space-x-2'>
           {/* {label && <Badge variant='outline'>{label.label}</Badge>} */}
@@ -77,7 +77,7 @@ export const columns: ColumnDef<IBooking>[] = [
       const status = statuses.find(
         (status) => status.value === s.toLowerCase()
       );
-      console.log(status, '  rr ', row.getValue('status'));
+      // console.log(status, '  rr ', row.getValue('status'));
       if (!status) {
         return null;
       }

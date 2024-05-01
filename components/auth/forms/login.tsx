@@ -4,9 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
-import { useLogin } from '@/hooks/useLogin';
 import { cn } from '@/lib/utils';
+import authService from '@/service/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { FaSpinner } from 'react-icons/fa';
 import { z } from 'zod';
@@ -19,9 +21,32 @@ export const UserLogin = () => {
   } = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
   });
-  const { mutate: loginUser, isPending, status } = useLogin();
+  const { toast } = useToast();
+  const router = useRouter();
+  const {
+    mutate: loginUser,
+    isPending,
+    status,
+  } = useMutation({
+    mutationFn: authService.login,
+    onSuccess: (data) => {
+      console.log('data ', data);
+      toast({
+        title: 'Logged in  ✅',
+      });
+    },
+    onError: (err: any) => {
+      console.log('err ', err);
+      console.log(err.message);
+      toast({
+        variant: 'destructive',
+        title: `Uh oh! ${err?.props ?? err?.message ?? 'something went wrong'}`,
+        description: 'There was a problem with your request.',
+      });
+    },
+  });
   async function onSubmit(data: z.infer<typeof loginSchema>) {
-    console.log(data);
+    console.log('data ', data);
     loginUser(data);
   }
   const isLoading = false;
@@ -68,7 +93,7 @@ export const UserLogin = () => {
             disabled={isLoading}
             onClick={handleSubmit(onSubmit)}
             className=' bg-gradient-to-r from-indigo-400 to-sky-300 py-4 hover:from-indigo-500 hover:to-sky-400'
-            type='submit'
+            // type='submit'
           >
             {status === 'pending' && (
               <FaSpinner className='mr-2 h-4 w-4 animate-spin' />

@@ -1,28 +1,24 @@
 import { IUserLogin } from '@/app/schema/loginSchema';
+import { IUserSignup } from '@/app/schema/signupSchema';
 import axios, { AxiosInstance } from 'axios';
 import Error from 'next/error';
 
 class AuthService {
-  protected readonly url: string;
-
-  public constructor(url?: string) {
-    this.url =
-      process.env.NEXT_PUBLIC_BACKEND_BASE_URL ||
-      url ||
-      'http://localhost:3003';
-  }
   public async login({ email, password }: IUserLogin) {
     try {
-      const response = await axios.post(`${this.url}/auth/login`, {
-        email,
-        password,
-      });
+      console.log('here 2');
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/auth/login`,
+        {
+          email,
+          password,
+        }
+      );
       return response.data;
     } catch (error: any) {
-      console.error('Login failed:', error);
-      return {
-        message: error?.message ?? 'Something went wrong',
-      };
+      console.log('errorr', error);
+      console.error('Login failed:', error.response.data);
+      throw new Error(error?.response?.data?.message ?? 'something went wrong');
     }
   }
   public async logout() {
@@ -34,7 +30,19 @@ class AuthService {
       throw error;
     }
   }
+  public async signup(data: IUserSignup) {
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/auth/signup`,
+        data
+      );
+      return response.data;
+    } catch (error: any) {
+      console.log('error ', error);
+      throw new Error(error.response.data);
+    }
+  }
 }
 
-export default new AuthService('http://localhost:3003');
+export default new AuthService();
 //

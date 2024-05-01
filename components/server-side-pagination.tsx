@@ -37,6 +37,7 @@ export const ServerSidePagination = ({ count }: { count: number }) => {
     router.push(pathname + '?' + createQueryString('page', String(prev)));
   };
   console.log('.env ', process.env.NEXT_PUBLIC_BACKEND_BASE_URL);
+  if (count < ROOMS_PER_PAGE) return <div />;
   return (
     <div className='py-6'>
       <Pagination>

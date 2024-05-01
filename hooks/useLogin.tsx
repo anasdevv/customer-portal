@@ -14,11 +14,11 @@ export const useLogin = () => {
       });
     },
     onError: (err: any) => {
-      console.log(err);
-      console.log(err.response.request.status);
+      console.log('err ', err);
+      console.log(err.message);
       toast({
         variant: 'destructive',
-        title: `Uh oh! ${err.response.data.message ?? 'something went wrong'}`,
+        title: `Uh oh! ${err?.props ?? err?.message ?? 'something went wrong'}`,
         description: 'There was a problem with your request.',
       });
     },

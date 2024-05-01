@@ -8,7 +8,12 @@ export const signupSchema = z.object({
     message: 'Required',
   }),
   email: z.string().trim().email(),
-  phone: z.string().trim().regex(phoneRegex, 'Invalid phone number'),
+  phoneNumber: z
+    .string({
+      required_error: 'phone number is required',
+    })
+    .trim()
+    .regex(phoneRegex, 'Invalid phone number'),
   password: z.string().trim().min(6),
   country: z
     .string()
@@ -16,3 +21,6 @@ export const signupSchema = z.object({
       message: 'Please select a valid country',
     }),
 });
+export type IUserSignup = z.infer<typeof signupSchema> & {
+  countryFlag?: string;
+};

@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import RoomService, { PaginatedResponse } from '@/service/room';
+import RoomService from '@/service/room';
 import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation';
+import { PaginatedResponse } from '@/lib/types';
 export const preProcessRoomQueryParam = (
   searchParams: ReadonlyURLSearchParams
 ) => {
@@ -51,13 +52,18 @@ const useGetRooms = (initialDate: PaginatedResponse) => {
         discount,
         orderBy,
         pageSize: ROOMS_PER_PAGE,
-        sort: sort,
+        sort,
         caps,
         features,
-        maxPrice: Number(price),
+        ...(Boolean(price)
+          ? {
+              maxPrice: Number(price),
+            }
+          : {}),
       }),
     retry: false,
   });
+  console.log('data ', data);
   return {
     count: (data as PaginatedResponse)?.count ?? 0,
     rooms: (data as PaginatedResponse)?.rooms ?? [],

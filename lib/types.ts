@@ -29,3 +29,14 @@ export interface Option {
   label: string;
   value: string;
 }
+export interface PaginatedResponse {
+  count: number;
+  rooms: RoomType[];
+}
+export interface FoodItemType {
+  name: string;
+  id: string;
+  picture?: string;
+  price: number;
+  description: string;
+}

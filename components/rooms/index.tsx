@@ -1,13 +1,13 @@
-import Filters from '../Filters';
 import { Room } from './room';
 import { ServerSidePagination } from '../server-side-pagination';
 import { ScrollArea } from '../ui/scroll-area';
 import { RoomsList } from './rooms-list';
 import { PageProps } from '@/app/rooms/page';
-import RoomService, { PaginatedResponse } from '@/service/room';
+import RoomService from '@/service/room';
 import { preProcessRoomQueryParam } from '@/hooks/useGetRooms';
 import { ReadonlyURLSearchParams } from 'next/navigation';
 import { RoomOperations } from './room-operations';
+import { PaginatedResponse } from '@/lib/types';
 const ROOMS_PER_PAGE = 9;
 export const Rooms = async ({ searchParams }: PageProps) => {
   console.log('spp ', ROOMS_PER_PAGE, searchParams);
@@ -25,7 +25,6 @@ export const Rooms = async ({ searchParams }: PageProps) => {
       <div className='flex-1 flex-col  space-y-6 w-full h-full p-2 rounded-lg overflow-y-auto sticky'>
         <ScrollArea className='h-[40rem]'>
           <RoomsList count={data?.count ?? 0} rooms={data?.rooms ?? []} />
-          <ServerSidePagination count={data?.count ?? 0} />
         </ScrollArea>
 
         {/* <h1 className='text-2xl'>Rooms </h1> */}

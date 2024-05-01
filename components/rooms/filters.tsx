@@ -87,7 +87,7 @@ export function RoomFilters() {
                         {f.featureName}
                       </label>{' '}
                     </div>
-                  ))}
+                  )) ?? []}
                 </div>
               </ScrollArea>
             }

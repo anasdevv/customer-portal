@@ -15,27 +15,83 @@ import {
 } from '@/components/ui/select';
 import { getCountries } from '@/lib/constants';
 import { cn } from '@/lib/utils';
+import authService from '@/service/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { FaSpinner } from 'react-icons/fa';
 import { z } from 'zod';
-import { signupSchema } from '../../../app/schema/signupSchema';
-interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
+import { IUserSignup, signupSchema } from '../../../app/schema/signupSchema';
 
+import { useToast } from '@/components/ui/use-toast';
+import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
+interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
+// https://flagcdn.com/pt.svg
+
+const COUNTRIES = getCountries();
 export function UserSignup({ className, ...props }: UserAuthFormProps) {
   const {
     register,
     handleSubmit,
     control,
+    setError,
     formState: { errors },
   } = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
   });
 
+  const { toast } = useToast();
+  const router = useRouter();
+  const {
+    mutate: signupUser,
+    error,
+    isPending,
+    data,
+  } = useMutation({
+    mutationFn: authService.signup,
+    onSuccess: (data) => {
+      console.log('signup ', data);
+      toast({
+        title: 'Signup  ✅',
+        description: 'signup sucessful',
+      });
+      router.push('/auth/login');
+      // router;
+    },
+    onError: (err: any) => {
+      console.log('err ', err);
+      console.log(err.message);
+      toast({
+        variant: 'destructive',
+        title: `Uh oh! ${
+          err?.props.message ?? err?.message ?? 'something went wrong'
+        }`,
+        description: 'There was a problem with your request.',
+      });
+      if (err.props.statusCode == 422) {
+        setError('email', {
+          message: 'user already exists with this email. Try login',
+        });
+      }
+      if (err.props.statusCode == 400 && Array.isArray(err.props.message)) {
+        err.props.message.forEach((obj: { field: string; error: string }) => {
+          setError(obj.field as keyof Omit<IUserSignup, 'countryFlag'>, {
+            message: obj.error ?? 'something went wrong',
+          });
+        });
+      }
+    },
+  });
+  console.log('signupresponse ', data);
   async function onSubmit(data: z.infer<typeof signupSchema>) {
-    console.log(data);
+    const country = COUNTRIES.find((c) => c.value === data.country);
+    console.log('singn ');
+    signupUser({
+      ...data,
+      country: country?.label as string,
+      countryFlag: `https://flagcdn.com/${data.country}.svg`,
+    });
   }
-  const isLoading = false;
   return (
     <div className={cn('grid gap-6', className)} {...props}>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -51,7 +107,7 @@ export function UserSignup({ className, ...props }: UserAuthFormProps) {
               autoCapitalize='none'
               autoComplete='name'
               autoCorrect='off'
-              disabled={isLoading}
+              disabled={isPending}
               {...register('name')}
             />
             {errors.name?.message && (
@@ -69,7 +125,7 @@ export function UserSignup({ className, ...props }: UserAuthFormProps) {
               autoCapitalize='none'
               autoComplete='email'
               autoCorrect='off'
-              disabled={isLoading}
+              disabled={isPending}
               {...register('email')}
             />
             {errors.email?.message && (
@@ -86,7 +142,7 @@ export function UserSignup({ className, ...props }: UserAuthFormProps) {
               type='password'
               autoCapitalize='none'
               autoCorrect='off'
-              disabled={isLoading}
+              disabled={isPending}
               {...register('password')}
             />
             {errors.password?.message && (
@@ -98,16 +154,18 @@ export function UserSignup({ className, ...props }: UserAuthFormProps) {
               Phone number
             </Label>
             <Input
-              id='phone'
-              placeholder='your phone number'
+              id='phoneNumber'
+              placeholder='your phoneNumber number'
               type='tel'
               autoComplete='tel'
               autoCorrect='off'
-              disabled={isLoading}
-              {...register('phone')}
+              disabled={isPending}
+              {...register('phoneNumber')}
             />
-            {errors.phone?.message && (
-              <p className='text-red-600 text-sm'>{errors.phone?.message}</p>
+            {errors.phoneNumber?.message && (
+              <p className='text-red-600 text-sm'>
+                {errors.phoneNumber?.message}
+              </p>
             )}
           </div>
           <div className='grid gap-1 text-white gap-y-2'>
@@ -127,7 +185,7 @@ export function UserSignup({ className, ...props }: UserAuthFormProps) {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      {getCountries().map(({ label, value }) => (
+                      {COUNTRIES.map(({ label, value }) => (
                         <div className='flex items-center justify-start py-1 '>
                           <SelectItem
                             value={value}
@@ -155,11 +213,11 @@ export function UserSignup({ className, ...props }: UserAuthFormProps) {
             />
           </div>
           <Button
-            disabled={isLoading}
+            disabled={isPending}
             className=' bg-gradient-to-r from-indigo-400 to-sky-300 py-4 hover:from-indigo-500 hover:to-sky-400'
             type='submit'
           >
-            {isLoading && <FaSpinner className='mr-2 h-4 w-4 animate-spin' />}
+            {isPending && <FaSpinner className='mr-2 h-4 w-4 animate-spin' />}
             Sign In
           </Button>
         </div>

@@ -1,25 +1,11 @@
-import { IUserLogin } from '@/app/schema/loginSchema';
-import { PaginatedResponse, RoomType } from '@/lib/types';
+import { PaginatedResponse } from '@/lib/types';
 import axios from 'axios';
 
-class RoomService {
-  protected readonly url: string;
-
-  public constructor(url?: string) {
-    this.url = `${
-      process.env.NEXT_PUBLIC_BACKEND_BASE_URL || url || 'http://localhost:3003'
-    }/room/`;
-  }
-
-  public async getAll(queryParams: {
+export class FoodService {
+  public async getFoodItems(queryParams: {
     pageNumber?: number | string;
-    discount?: string;
-    orderBy?: string;
     pageSize?: number;
-    sort?: string;
-    caps?: string;
-    features?: string;
-    maxPrice?: number | null;
+    search: string;
   }): Promise<
     | PaginatedResponse
     | {
@@ -42,18 +28,16 @@ class RoomService {
       if (typeof filteredParams.pageNumber === 'number') {
         filteredParams.pageNumber = String(filteredParams.pageNumber);
       }
-      const params = new URLSearchParams(filteredParams);
-      const response = await axios.get(`${this.url}`, { params });
-      console.log('response ', response.data);
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/food-items`,
+        {
+          params: new URLSearchParams(filteredParams),
+        }
+      );
       return response.data;
     } catch (error: any) {
-      console.error('rooms error:', error);
-      return {
-        message: error?.message ?? 'Something went wrong',
-      };
+      throw new Error(error);
     }
   }
 }
-
-export default new RoomService();
-//
+export default new FoodService();

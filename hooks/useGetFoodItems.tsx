@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import FoodItemsService from '@/service/food';
 import { useSearchParams } from 'next/navigation';
-export const ITEMS_PER_PAGE = 10;
+export const ITEMS_PER_PAGE = 12;
 export function useFoodItems() {
   const searchParams = useSearchParams();
 

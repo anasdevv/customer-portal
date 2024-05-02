@@ -1,13 +1,18 @@
 import Image from 'next/image';
 import { Button } from '../ui/button';
 import { FoodItemType } from '@/lib/types';
+import { OrderFoodItem } from '.';
 
 export const FoodItem = ({
   price,
   description,
   picture,
   name,
-}: FoodItemType) => (
+  id,
+  addItemToOrder,
+}: FoodItemType & {
+  addItemToOrder: (item: OrderFoodItem) => void;
+}) => (
   <div className='flex flex-col gap-2'>
     <Image
       alt='Food Picture'
@@ -24,6 +29,14 @@ export const FoodItem = ({
       <p className='text-sm text-muted line-clamp-3'>{description}</p>
       <div className='font-semibold'>${price}</div>
       <Button
+        onClick={() => {
+          addItemToOrder({
+            price,
+            picture,
+            name,
+            id,
+          } as OrderFoodItem);
+        }}
         size='sm'
         className=' bg transform transition hover:scale-95 bg-gradient-to-r from-indigo-300 to-sky-500'
       >

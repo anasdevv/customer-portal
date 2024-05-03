@@ -1,12 +1,45 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import jwt from 'jsonwebtoken';
+import { setCookie } from 'cookies-next';
+import { redirect } from 'next/dist/server/api-utils';
+import * as jose from 'jose';
+const encodedSecret = new TextEncoder().encode(process.env.JWT_SECRET);
 
-export function middleware(request: NextRequest) {
-  const allCookies = request.cookies.getAll();
-  // console.log(allCookies);
-  // console.log('biscuits ', request.cookies);
+export async function middleware(request: NextRequest, resp: NextResponse) {
+  // console.log('.env ', process.env.JWT_SECRET);
+  // console.log('req headers', request.headers);
   const response = NextResponse.next();
+  let isAuthenticated = false;
+  const token = request.cookies.get('Authentication');
+  if (token?.value) {
+    try {
+      const res = await jose.jwtVerify(token?.value, encodedSecret);
+      if (Boolean(res)) {
+        isAuthenticated = true;
+      }
+    } catch (error) {
+      console.log(error);
+      isAuthenticated = false;
+    }
+  }
+  if (request.nextUrl.pathname.includes('rooms')) {
+    if (token?.value && isAuthenticated) {
+      return response;
+    } else {
+      setCookie('Authentication', '');
+      return NextResponse.redirect(new URL('/auth/login', request.url));
+    }
+  }
+  if (
+    (request.nextUrl.pathname === '/' ||
+      request.nextUrl.pathname === '/auth/signup' ||
+      request.nextUrl.pathname === '/auth/login') &&
+    token?.value &&
+    isAuthenticated
+  ) {
+    return NextResponse.redirect(new URL('/rooms', request.url));
+  }
   return response;
 }
 export const config = {

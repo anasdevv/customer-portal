@@ -4,6 +4,11 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { EditProfile } from '../edit-profile';
+import { LogOut } from 'lucide-react';
+import { useUserStore } from '@/app/store/useUser';
+import useStore from '@/app/store/useStore';
+import { useRouter } from 'next/navigation';
+import { setCookie } from 'cookies-next';
 
 type Tab = {
   title: string;
@@ -24,9 +29,10 @@ export const Tabs = ({
   tabClassName?: string;
   contentClassName?: string;
 }) => {
+  const logoutUser = useStore(useUserStore, (state) => state.resetUser);
   const [active, setActive] = useState<Tab>(propTabs[0]);
   const [tabs, setTabs] = useState<Tab[]>(propTabs);
-
+  const router = useRouter();
   const moveSelectedTabToTop = (idx: number) => {
     const newTabs = [...propTabs];
     const selectedTab = newTabs.splice(idx, 1);
@@ -41,10 +47,24 @@ export const Tabs = ({
     <>
       <div
         className={cn(
-          'flex flex-row items-center justify-center [perspective:1000px] relative overflow-hidden sm:overflow-visible no-visible-scrollbar max-w-full w-full  py-2 rounded pl-2 bg-gradient-to-r from-indigo-600 to-sky-300',
+          ' flex flex-row items-center justify-center [perspective:1000px] relative overflow-hidden sm:overflow-visible no-visible-scrollbar max-w-full w-full  py-2 rounded pl-2 bg-gradient-to-r from-indigo-600 to-sky-300',
           containerClassName
         )}
       >
+        {/* <div className=''> */}
+        <button
+          className='px-5 absolute left-5   h-[2rem]  bg-white rounded shadow-md  transition hover:origin-top-left hover:rotate-6'
+          onClick={(e) => {
+            console.log('clicked logout');
+            e?.preventDefault();
+            logoutUser?.();
+            setCookie('Authentication', '');
+            router.replace('/auth/login');
+          }}
+        >
+          Logout
+        </button>
+        {/* </div> */}
         {propTabs.map((tab, idx) => (
           <button
             key={tab.title}

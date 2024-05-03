@@ -1,4 +1,4 @@
-'use client';
+// 'use client';
 
 import ImageSlider from '../components/image.slider';
 import { SparklesCore } from '../components/sparkles';
@@ -11,7 +11,7 @@ import { RoomsPreview } from '@/components/RoomsPreview';
 import { FAQs } from '@/components/home/faqs';
 import { Footer } from '@/components/home/footer';
 import Link from 'next/link';
-export default function Home() {
+export default async function Home() {
   return (
     <>
       <Header />

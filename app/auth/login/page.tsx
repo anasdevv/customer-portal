@@ -2,7 +2,6 @@ import { UserLogin } from '@/components/auth/forms/login';
 import Link from 'next/link';
 
 export default function page() {
-  console.log('hello from login');
   return (
     <div className='lg:p-8'>
       <div className='mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]'>

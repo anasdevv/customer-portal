@@ -1,5 +1,6 @@
 import { PaginatedResponse } from '@/lib/types';
 import axios from 'axios';
+import { axiosClient } from './axiosClient';
 
 export class FoodService {
   public async getFoodItems(queryParams: {
@@ -28,7 +29,7 @@ export class FoodService {
       if (typeof filteredParams.pageNumber === 'number') {
         filteredParams.pageNumber = String(filteredParams.pageNumber);
       }
-      const response = await axios.get(
+      const response = await axiosClient.get(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/food-items`,
         {
           params: new URLSearchParams(filteredParams),

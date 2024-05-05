@@ -1,6 +1,5 @@
-import { IUserLogin } from '@/app/schema/loginSchema';
-import { PaginatedResponse, RoomType } from '@/lib/types';
-import axios from 'axios';
+import { PaginatedResponse } from '@/lib/types';
+import { axiosClient } from './axiosClient';
 
 class RoomService {
   protected readonly url: string;
@@ -9,8 +8,28 @@ class RoomService {
     this.url = `${
       process.env.NEXT_PUBLIC_BACKEND_BASE_URL || url || 'http://localhost:3003'
     }/room/`;
+    // axiosClient.interceptors.request.use
   }
-
+  public async getById(roomId: string) {
+    try {
+      const response = await axiosClient.get(`${this.url}${roomId}`);
+      return response.data;
+    } catch (error: any) {
+      if (error?.response?.data?.statusCode === 401) {
+        throw new Error(...error.response.data);
+      }
+      console.error('rooms error:', error);
+      throw new Error(error?.message ?? 'Something went wrong');
+    }
+  }
+  public async getPreviews() {
+    try {
+      const response = await axiosClient.get(`${this.url}preview`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
   public async getAll(queryParams: {
     pageNumber?: number | string;
     discount?: string;
@@ -43,14 +62,16 @@ class RoomService {
         filteredParams.pageNumber = String(filteredParams.pageNumber);
       }
       const params = new URLSearchParams(filteredParams);
-      const response = await axios.get(`${this.url}`, { params });
+      const response = await axiosClient.get(`${this.url}`, { params });
       console.log('response ', response.data);
       return response.data;
     } catch (error: any) {
+      console.log('code ', error.response.data);
+      if (error?.response?.data?.statusCode === 401) {
+        throw error?.response?.data;
+      }
       console.error('rooms error:', error);
-      return {
-        message: error?.message ?? 'Something went wrong',
-      };
+      throw new Error(error?.message ?? 'Something went wrong');
     }
   }
 }

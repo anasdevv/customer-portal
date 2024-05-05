@@ -23,7 +23,7 @@ export async function middleware(request: NextRequest, resp: NextResponse) {
       isAuthenticated = false;
     }
   }
-  if (request.nextUrl.pathname.includes('rooms')) {
+  if (request.nextUrl.pathname.includes('tabs')) {
     if (token?.value && isAuthenticated) {
       return response;
     } else {

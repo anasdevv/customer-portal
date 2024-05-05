@@ -4,10 +4,10 @@ import { Room } from './room';
 import useGetRooms from '@/hooks/useGetRooms';
 import { Spinner } from '../ui/Spinner';
 import { ServerSidePagination } from '../server-side-pagination';
+// import useStore from '@/app/store/useStore';
 
-export const RoomsList = ({ ...initalData }: PaginatedResponse) => {
-  const { count, error, fetchRoomsLoading, isError, rooms } =
-    useGetRooms(initalData);
+export const RoomsList = () => {
+  const { count, error, fetchRoomsLoading, isError, rooms } = useGetRooms();
   console.log('rooms from room list ', rooms);
   if (fetchRoomsLoading)
     return (

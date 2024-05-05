@@ -7,154 +7,177 @@ import {
   CardContent,
   Card,
 } from '@/components/ui/card';
+import RoomService from '@/service/room';
+
 import { Button } from '../ui/button';
 import { AiFillDollarCircle } from 'react-icons/ai';
 import { Separator } from '../ui/separator';
 import { MdPeople } from 'react-icons/md';
 import { BookRoomForm } from '../forms/book-room-form';
+import { usePathname } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
+import { Spinner } from '../ui/Spinner';
+import { FeatureType } from '@/lib/types';
 // 2 guests · 1 bedroom · 1 bed · 1 bath · Wifi · Kitchen
 export default function Room() {
+  const pathname = usePathname();
+  const [_, __, path, roomId] = pathname.split('/');
+  const { data, isLoading } = useQuery({
+    queryKey: ['room', roomId],
+    queryFn: () => RoomService.getById(roomId),
+    enabled: Boolean(roomId),
+  });
+  function fillStars(rating: number) {
+    const filledStars = [];
+    for (let i = 1; i <= 5; i++) {
+      if (i <= rating) {
+        filledStars.push(
+          <StarIcon key={i} className='w-2.5 h-2.5 fill-primary' />
+        );
+      } else {
+        filledStars.push(<StarIcon key={i} className='w-2.5 h-2.5' />);
+      }
+    }
+    return filledStars;
+  }
+  console.log('data room', data);
   return (
     <div className='flex space-x-6 w-full overflow-hidden relative h-full rounded-2xl p-3  font-bold text-white bg-gradient-to-br from-slate-700 to-slate-950 pb-4'>
-      <div className='bg-slate-800 h-full sticky  w-1/3 overflow-hidden rounded-lg hidden lg:block'>
-        <Review />
+      <div className='bg-slate-800 h-full sticky  w-[40%] overflow-hidden rounded-lg hidden lg:block'>
+        <Review roomId={roomId} />
       </div>
-      <div className='flex w-full items-center justify-start space-y-5 flex-col overflow-y-auto scroll-pb-10 pr-5'>
-        <div className='flex w-full '>
-          <div className='w-1/2 flex flex-col py-4 pr-2 space-y-3'>
-            <p className='text-3xl'>
-              Cozy and Charming Mountain Retreat with Hot Tub
-            </p>
-            <div className='flex justify-start items-start'>
-              <div className='flex flex-wrap  items-start space-x-2 space-y-1'>
-                {Array.from({
-                  length: 6,
-                }).map((_, index) => (
-                  <>
-                    <div className='bg-gray-400 rounded-xl p-2 text-xs text-foreground'>
-                      hello
+      {isLoading ? (
+        <div className='h-full w-full flex items-center justify-center text-white'>
+          <Spinner />
+        </div>
+      ) : (
+        <div className='flex w-full items-center justify-start space-y-5 flex-col overflow-y-auto scroll-pb-10 pr-5'>
+          <div className='flex w-full '>
+            <div className='w-1/2 flex flex-col py-4 pr-2 space-y-3'>
+              <p className='text-3xl'>
+                {data?.title ??
+                  'Cozy and Charming Mountain Retreat with Hot Tub'}
+              </p>
+              <div className='flex justify-start items-start'>
+                <div className='flex flex-wrap  items-start space-x-2 space-y-1'>
+                  {data?.features?.map((f: FeatureType, index: number) => (
+                    <div key={f.id}>
+                      <div className='bg-gray-400 rounded-xl p-2 text-xs text-foreground'>
+                        {f.featureName}
+                      </div>
+                      {(index + 1) % 5 === 0 && <div className='w-full'></div>}
                     </div>
-                    {(index + 1) % 5 === 0 && <div className='w-full'></div>}
-                  </>
-                ))}
-
-                <div className='bg-gray-400 rounded-xl p-2 text-xs text-foreground'>
-                  +5 more
+                  ))}
                 </div>
               </div>
+              <span className='text-sm text-muted-foreground line-clamp-10'>
+                {data?.description}
+              </span>
             </div>
-            <span className='text-sm text-muted-foreground'>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic neque
-              vitae sit vel inventore suscipit. Suscipit distinctio quas nulla
-              praesentium aliquam possimus aut consequuntur! Explicabo adipisci
-              ad velit quas at! Lorem ipsum dolor sit amet consectetur
-              adipisicing elit. Obcaecati quas porro doloribus quia culpa
-              similique fuga dolore. Aperiam, necessitatibus excepturi maxime, a
-              ratione voluptatem fuga cupiditate illo tenetur illum modi!
-            </span>
+            <div className=' h-1/3 w-full rounded'>
+              <Image
+                // fill
+                width={800}
+                height={1000}
+                // layout='fill'
+                loading='eager'
+                alt='Product Image'
+                objectFit='cover'
+                src='https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&h=500&w=800&q=80'
+                // className='z-10 h-full w-full object-cover object-center'
+              />
+            </div>
           </div>
-          <div className=' h-1/3 w-full rounded'>
-            <Image
-              // fill
-              width={800}
-              height={1000}
-              // layout='fill'
-              loading='eager'
-              alt='Product Image'
-              objectFit='cover'
-              src='https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&h=500&w=800&q=80'
-              // className='z-10 h-full w-full object-cover object-center'
-            />
-          </div>
-        </div>
-        <BookRoomForm />
-        {/* <Button
+          <BookRoomForm
+            id={roomId}
+            maxCapacity={data?.maxCapacity}
+            discount={data?.discount}
+            regularPrice={data?.regularPrice}
+          />
+          {/* <Button
           className=' bg-gradient-to-r from-indigo-400 to-sky-300 py-4 hover:from-indigo-500 hover:to-sky-400 w-full'
           type='submit'
         >
           Book now
         </Button> */}
-        <Card className='w-full'>
-          <CardContent className='p-4 flex items-center justify-between'>
-            <div>
-              <span className='font-bold text-xl'>$400</span>
-              <span className='text-muted-foreground'>/night</span>
-            </div>
-            <div className='flex items-center justify-start space-x-3'>
-              <MdPeople className='text-2xl' />
-              <p>fits upto 9 people</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className='w-full px-3'>
-          <CardContent className='p-4 flex items-center gap-4 relative'>
-            <AwardIcon className='w-10 h-10' />
-            <div className='font-semibold max-w-[16rem] hidden sm:flex md:hidden lg:flex'>
-              One of the most loved room, according to guests.
-            </div>
-            <div className='flex items-center gap-6 ml-auto'>
-              <div className='flex flex-col gap-1 text-center'>
-                <div className='text-2xl font-semibold tracking-tighter'>
-                  4.93
+          <Card className='w-full'>
+            <CardContent className='p-4 flex items-center justify-between'>
+              <div>
+                <span className='font-bold text-xl'>$400</span>
+                <span className='text-muted-foreground'>/night</span>
+              </div>
+              <div className='flex items-center justify-start space-x-3'>
+                <MdPeople className='text-2xl' />
+                <p>fits upto {data?.maxCapacity} people</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className='w-full px-3'>
+            <CardContent className='p-4 flex items-center gap-4 relative'>
+              <AwardIcon className='w-10 h-10' />
+              <div className='font-semibold max-w-[16rem] hidden sm:flex md:hidden lg:flex'>
+                One of the most loved room, according to guests.
+              </div>
+              <div className='flex items-center gap-6 ml-auto'>
+                <div className='flex flex-col gap-1 text-center'>
+                  <div className='text-2xl font-semibold tracking-tighter'>
+                    {data?.reviews?.rating ?? 0}
+                  </div>
+                  <div className='flex items-center gap-1'>
+                    {fillStars(data?.reviews?.rating ?? 0)}
+                  </div>
                 </div>
-                <div className='flex items-center gap-1'>
-                  <StarIcon className='w-2.5 h-2.5 fill-primary' />
-                  <StarIcon className='w-2.5 h-2.5 fill-primary' />
-                  <StarIcon className='w-2.5 h-2.5 fill-primary' />
-                  <StarIcon className='w-2.5 h-2.5 fill-primary' />
-                  <StarIcon className='w-2.5 h-2.5' />
+                <Separator className='h-9' orientation='vertical' />
+                <div className='flex flex-col gap-0.5 text-center'>
+                  <div className='text-2xl font-semibold tracking-tighter'>
+                    {data?.reviews?.count ?? 0}
+                  </div>
+                  <div className='text-xs underline font-semibold'>Reviews</div>
                 </div>
               </div>
-              <Separator className='h-9' orientation='vertical' />
-              <div className='flex flex-col gap-0.5 text-center'>
-                <div className='text-2xl font-semibold tracking-tighter'>
-                  745
-                </div>
-                <div className='text-xs underline font-semibold'>Reviews</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className='w-full px-3'>
-          <CardContent className='grid gap-4'>
-            <h3 className='text-xl font-semibold'>What this place offers</h3>
-            <ul className='grid lg:grid-cols-2 gap-6'>
-              <li className='flex gap-4'>
-                <MountainSnowIcon className='w-6 h-6' />
-                Mountain view
-              </li>
-              <li className='flex gap-4'>
-                <WavesIcon className='w-6 h-6' />
-                Beach access
-              </li>
-              <li className='flex gap-4'>
-                <ChefHatIcon className='w-6 h-6' />
-                Private chef
-              </li>
-              <li className='flex gap-4'>
-                <WifiIcon className='w-6 h-6' />
-                Wifi
-              </li>
-              <li className='flex gap-4'>
-                <CarIcon className='w-6 h-6' />
-                Parking
-              </li>
-              <li className='flex gap-4'>
-                <CameraIcon className='w-6 h-6' />
-                Security cameras
-              </li>
-              <li className='flex gap-4'>
-                <AccessibilityIcon className='w-6 h-6' />
-                Wheelchair accessible
-              </li>
-              <li className='flex gap-4'>
-                <WindIcon className='w-6 h-6' />
-                Patio
-              </li>
-            </ul>
-          </CardContent>
-        </Card>
-      </div>
+            </CardContent>
+          </Card>
+          <Card className='w-full px-3'>
+            <CardContent className='grid gap-4'>
+              <h3 className='text-xl font-semibold'>What this place offers</h3>
+              <ul className='grid lg:grid-cols-2 gap-6'>
+                <li className='flex gap-4'>
+                  <MountainSnowIcon className='w-6 h-6' />
+                  Mountain view
+                </li>
+                <li className='flex gap-4'>
+                  <WavesIcon className='w-6 h-6' />
+                  Beach access
+                </li>
+                <li className='flex gap-4'>
+                  <ChefHatIcon className='w-6 h-6' />
+                  Private chef
+                </li>
+                <li className='flex gap-4'>
+                  <WifiIcon className='w-6 h-6' />
+                  Wifi
+                </li>
+                <li className='flex gap-4'>
+                  <CarIcon className='w-6 h-6' />
+                  Parking
+                </li>
+                <li className='flex gap-4'>
+                  <CameraIcon className='w-6 h-6' />
+                  Security cameras
+                </li>
+                <li className='flex gap-4'>
+                  <AccessibilityIcon className='w-6 h-6' />
+                  Wheelchair accessible
+                </li>
+                <li className='flex gap-4'>
+                  <WindIcon className='w-6 h-6' />
+                  Patio
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

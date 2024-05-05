@@ -48,6 +48,7 @@ export function RoomFilters() {
     'caps',
     parseAsArrayOf(parseAsString)
   );
+  console.log('features data', featuresData);
   return (
     <ScrollArea className='h-[30rem] '>
       <Accordion type='multiple' className='w-full px-3'>
@@ -63,31 +64,33 @@ export function RoomFilters() {
             {
               <ScrollArea className='h-40'>
                 <div className='flex-col space-y-2'>
-                  {featuresData?.map((f: FeatureType) => (
-                    <div
-                      key={f?.id}
-                      className='flex flex-row items-start space-x-3 space-y-0'
-                    >
-                      <Checkbox
-                        id={`feature-${f.id}`}
-                        checked={features?.includes(f.id)}
-                        onCheckedChange={(checked) => {
-                          checked
-                            ? setFeatures([...(features ?? []), f.id])
-                            : setFeatures(
-                                (feats) =>
-                                  feats?.filter((feat) => feat !== f.id) ?? []
-                              );
-                        }}
-                      />
-                      <label
-                        htmlFor={`feature-${f.id}`}
-                        className='font-normal cursor-pointer'
+                  {(Array.isArray(featuresData) &&
+                    featuresData?.map((f: FeatureType) => (
+                      <div
+                        key={f?.id}
+                        className='flex flex-row items-start space-x-3 space-y-0'
                       >
-                        {f.featureName}
-                      </label>{' '}
-                    </div>
-                  )) ?? []}
+                        <Checkbox
+                          id={`feature-${f.id}`}
+                          checked={features?.includes(f.id)}
+                          onCheckedChange={(checked) => {
+                            checked
+                              ? setFeatures([...(features ?? []), f.id])
+                              : setFeatures(
+                                  (feats) =>
+                                    feats?.filter((feat) => feat !== f.id) ?? []
+                                );
+                          }}
+                        />
+                        <label
+                          htmlFor={`feature-${f.id}`}
+                          className='font-normal cursor-pointer'
+                        >
+                          {f.featureName}
+                        </label>{' '}
+                      </div>
+                    ))) ??
+                    []}
                 </div>
               </ScrollArea>
             }

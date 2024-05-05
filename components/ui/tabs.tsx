@@ -1,36 +1,42 @@
 'use client';
 
-import { useState } from 'react';
-import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { EditProfile } from '../edit-profile';
-import { LogOut } from 'lucide-react';
-import { useUserStore } from '@/app/store/useUser';
-import useStore from '@/app/store/useStore';
-import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+// import useStore from '@/app/store/useStore';
+import { useUser } from '@/app/providers/UserContext';
 import { setCookie } from 'cookies-next';
+import { usePathname, useRouter } from 'next/navigation';
 
 type Tab = {
   title: string;
   value: string;
   content?: string | React.ReactNode | any;
+  disabled?: boolean;
 };
 
 export const Tabs = ({
+  initalActive,
   tabs: propTabs,
   containerClassName,
   activeTabClassName,
   tabClassName,
   contentClassName,
 }: {
+  initalActive?: Tab;
   tabs: Tab[];
   containerClassName?: string;
   activeTabClassName?: string;
   tabClassName?: string;
   contentClassName?: string;
 }) => {
-  const logoutUser = useStore(useUserStore, (state) => state.resetUser);
-  const [active, setActive] = useState<Tab>(propTabs[0]);
+  // const logoutUser = useStore(useUserStore, (state) => state.resetUser);
+  const [active, setActive] = useState<Tab>(() =>
+    initalActive ? initalActive : propTabs[0]
+  );
+  const pathname = usePathname();
+  const { logout } = useUser();
+  const [_, __, path, roomId] = pathname.split('/');
   const [tabs, setTabs] = useState<Tab[]>(propTabs);
   const router = useRouter();
   const moveSelectedTabToTop = (idx: number) => {
@@ -40,7 +46,16 @@ export const Tabs = ({
     setTabs(newTabs);
     setActive(newTabs[0]);
   };
+  console.log('roomId ', roomId);
+  useEffect(() => {
+    if (path === 'rooms') return;
+    const idx = tabs.findIndex((t) => t.value === path);
 
+    console.log('idx ', idx, ' path ', path);
+    if (idx >= 0) {
+      moveSelectedTabToTop(idx);
+    }
+  }, [roomId]);
   const [hovering, setHovering] = useState(false);
 
   return (
@@ -57,7 +72,7 @@ export const Tabs = ({
           onClick={(e) => {
             console.log('clicked logout');
             e?.preventDefault();
-            logoutUser?.();
+            logout();
             setCookie('Authentication', '');
             router.replace('/auth/login');
           }}
@@ -67,9 +82,11 @@ export const Tabs = ({
         {/* </div> */}
         {propTabs.map((tab, idx) => (
           <button
+            disabled={tab?.disabled ?? false}
             key={tab.title}
             onClick={() => {
               moveSelectedTabToTop(idx);
+              window.history.pushState(null, '', `/tabs/${tab.value}`);
             }}
             onMouseEnter={() => setHovering(true)}
             onMouseLeave={() => setHovering(false)}
@@ -120,6 +137,7 @@ export const FadeInDiv = ({
   const isActive = (tab: Tab) => {
     return tab.value === tabs[0].value;
   };
+  console.log('infiniteloop');
   return (
     <div className='relative w-full h-full'>
       {tabs.map((tab, idx) => (

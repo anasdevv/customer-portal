@@ -5,13 +5,8 @@ const endDate = () => {
   return new Date(date.setDate(date.getDate() + 30));
 };
 export const BookingformSchema = z.object({
-  room: z.object({
-    id: z.coerce.string().min(1, {
-      message: 'Required',
-    }),
-    title: z.string(),
-  }),
-  descritption: z.string().trim(),
+  room: z.string(),
+  descritption: z.string().trim().optional(),
   date: z
     .object({
       from: z.date(),

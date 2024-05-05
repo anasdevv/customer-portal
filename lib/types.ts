@@ -9,6 +9,7 @@ export interface ReviewType {
   rating: number;
   roomId: string;
   userId: string;
+  name?: string;
 }
 export interface RoomType {
   id: string;
@@ -23,7 +24,16 @@ export interface RoomType {
   features: FeatureType[];
   reviews: ReviewType[];
 }
-
+export interface BookingType {
+  id?: string;
+  startDate: Date;
+  endDate: Date;
+  numNights: number;
+  roomId: string;
+  hasBreakfast: boolean;
+  totalPrice: number;
+  observations?: string;
+}
 // export interface FeatureType {}
 export interface Option {
   label: string;
@@ -40,3 +50,9 @@ export interface FoodItemType {
   price: number;
   description: string;
 }
+
+export interface OrderItem {
+  id: string;
+  quantity: string;
+}
+// export interface ReviewType

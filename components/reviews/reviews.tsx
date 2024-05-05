@@ -1,49 +1,58 @@
-export const Reviews = () => {
-  const dummyReviews = [
+import { ReviewType } from '@/lib/types';
+import { EmptyState } from '../order-food';
+import { formatDistance, parseISO } from 'date-fns';
+export const formatDistanceFromNow = (dateStr: string) =>
+  formatDistance(parseISO(dateStr), new Date(), {
+    addSuffix: true,
+  })
+    .replace('about ', '')
+    .replace('in', 'In');
+export const Reviews = ({
+  reviews,
+}: {
+  reviews: ReviewType &
     {
-      name: 'John Doe',
-      rating: 3,
-      review:
-        'The product is amazing! I love the quality and the design. It was exactly what I was looking for. Will definitely buy from this store again.',
-    },
-    {
-      name: 'Jane Smith',
-      rating: 2,
-      review:
-        'The product is amazing! I love the quality and the design. It was exactly what I was looking for. Will definitely buy from this store again.',
-    },
-  ];
+      user: {
+        name: string;
+      };
+    }[];
+}) => {
+  console.log('reviews ', reviews);
   return (
-    <div className='grid gap-4 px-4'>
-      {dummyReviews.map((r) => (
-        <ReviewItem {...r} />
-      ))}
+    <div className='w-full flex flex-col items-start justify-start px-4'>
+      {reviews && reviews.length > 0 ? (
+        reviews?.map((r) => <ReviewItem {...r} />)
+      ) : (
+        <div>
+          <EmptyState message='No review added yet' />
+        </div>
+      )}
     </div>
   );
 };
 function ReviewItem({
-  name,
-  rating,
-  review,
-}: {
-  name: string;
-  rating: number;
-  review: string;
+  user,
+  rating = 0,
+  comment,
+}: Partial<ReviewType> & {
+  user: {
+    name: string;
+  };
 }) {
   const stars = [];
   for (let i = 0; i < rating; i++) {
     stars.push(<StarIcon className='w-4 h-4 fill-yellow-400' />);
   }
-  for (let i = 5 - rating; i <= 5; i++) {
+  for (let i = 5 - rating; i > 0; i--) {
     stars.push(
       <StarIcon className='w-4 h-4 fill-muted stroke-muted-foreground' />
     );
   }
   return (
     <div className='grid gap-2'>
-      <h4 className='font-semibold'>{name}</h4>
+      <h4 className='font-semibold'>{user.name}</h4>
       <div className='flex items-center gap-2'>{stars}</div>
-      <p className='line-clamp-2 text-sm'>{review}</p>
+      <p className='line-clamp-2 text-sm'>{comment}</p>
     </div>
   );
 }

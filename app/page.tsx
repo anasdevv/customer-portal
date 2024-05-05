@@ -1,16 +1,16 @@
-// 'use client';
+'use client';
 
+import { RoomsPreview } from '@/components/RoomsPreview';
+import { FAQs } from '@/components/home/faqs';
+import { Features } from '@/components/home/features';
+import { Footer } from '@/components/home/footer';
+import { Spotlight } from '@/components/spotlight';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import Header from '../components/home/header';
 import ImageSlider from '../components/image.slider';
 import { SparklesCore } from '../components/sparkles';
 import AnimationRevealPage from '../helpers/AnimationRevealPage';
-import Header from '../components/home/header';
-import { Spotlight } from '@/components/spotlight';
-import { Button } from '@/components/ui/button';
-import { Features } from '@/components/home/features';
-import { RoomsPreview } from '@/components/RoomsPreview';
-import { FAQs } from '@/components/home/faqs';
-import { Footer } from '@/components/home/footer';
-import Link from 'next/link';
 export default async function Home() {
   return (
     <>
@@ -59,7 +59,7 @@ export default async function Home() {
                       asChild
                       className=' bg-gradient-to-r from-indigo-400 to-sky-300 w-1/2 lg:p-8 p-4 text-foreground font-semibold lg:text-xl text-base hover:bg-indigo-500'
                     >
-                      <Link href='/rooms'>Browse Rooms</Link>
+                      <Link href='/tabs/rooms'>Browse Rooms</Link>
                     </Button>
                   </div>
                 </div>

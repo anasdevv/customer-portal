@@ -1,7 +1,8 @@
 'use client';
 import { Button } from '@/components/ui/button';
-import { format } from 'date-fns';
+import { differenceInDays, format } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
+import RoomService from '@/service/room';
 
 import { Calendar } from '@/components/ui/calendar';
 import {
@@ -34,6 +35,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import BookingService from '@/service/booking';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -41,17 +43,123 @@ import { z } from 'zod';
 import { DatePickerWithRange } from '../booking/date-range-picker';
 import { BookingformSchema } from './schema/bookingformSchema';
 import { Switch } from '../ui/switch';
-export function BookRoomForm() {
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { FaSpinner } from 'react-icons/fa';
+import { useToast } from '../ui/use-toast';
+import { useMemo, useState } from 'react';
+import { Separator } from '../ui/separator';
+import { Label } from '../ui/label';
+import { Textarea } from '../ui/textarea';
+type Room = {
+  id: string;
+  maxCapacity?: number;
+  regularPrice?: number;
+  discount?: number;
+};
+export function BookRoomForm({
+  id,
+  maxCapacity,
+  regularPrice,
+  discount,
+}: Room) {
+  const [open, setOpen] = useState<boolean>(false);
+  const query = useQueryClient();
+  const { toast } = useToast();
   const form = useForm<z.infer<typeof BookingformSchema>>({
+    defaultValues: {
+      room: id,
+    },
     resolver: zodResolver(BookingformSchema),
   });
+  const { data: unavailableDates } = useQuery({
+    queryKey: ['unavailable-dates', id],
+    queryFn: () => BookingService.getUnavailableDates(id),
+    enabled: Boolean(id),
+  });
+  const disableDates = unavailableDates?.map(
+    (d: { startDate: Date; endDate: Date }) => ({
+      from: new Date(d?.startDate),
+      to: new Date(d.endDate),
+    })
+  );
+  console.log('unavailable ', unavailableDates);
+  const {
+    mutate: addBooking,
+    isPending,
+    error,
+  } = useMutation({
+    mutationFn: BookingService.addBooking,
+    onSuccess: () => {
+      query.invalidateQueries({
+        queryKey: ['unavailable-dates'],
+      });
+      toast({
+        title: 'Booking added successfully 💯 👍 📅',
+        description: `We're thrilled to confirm your reservation. Get ready for an amazing experience ahead! 🎉"`,
+      });
+      form.reset();
+      setOpen(false);
+    },
+
+    onError: (error: any) => {
+      console.log('error ', error);
+      if (error.statusCode === 422) {
+        form.setError('date', {
+          message:
+            'Booking in this duration already exists try another room or try other dates',
+        });
+      }
+    },
+    // mutationKey : ['']
+  });
+  console.log('eee ', error);
+  console.log('form ', form.getValues());
+  const { data: roomsList, isLoading } = useQuery({
+    queryKey: ['room-preview'],
+    queryFn: () => RoomService.getPreviews(),
+  });
+  const totalPrice = useMemo(() => {
+    const price =
+      ((regularPrice ?? 0) - (discount ?? 0)) *
+        differenceInDays(
+          form?.getValues('date')?.to ?? new Date(),
+          form?.getValues('date')?.from ?? new Date()
+        ) +
+      (form?.getValues().breakfastIncluded ? 20 : 0);
+    return price;
+  }, [
+    form.getValues('breakfastIncluded'),
+    form.getValues('date.from'),
+    form.getValues('date.to'),
+  ]);
   const onSubmit = (data: z.infer<typeof BookingformSchema>) => {
     console.log('data ', data);
+    addBooking({
+      startDate: new Date(data.date.from),
+      roomId: data.room,
+      endDate: new Date(data.date.to),
+      hasBreakfast: data.breakfastIncluded,
+      numNights: differenceInDays(data.date.to, data.date.from),
+      totalPrice,
+      observations: data.descritption,
+    });
   };
+
+  console.log('data2 ', form.formState.errors);
   return (
-    <Sheet>
+    <Sheet
+      open={open}
+      onOpenChange={(open) => {
+        console.log('open changing ', open);
+        setOpen(open);
+        form.reset();
+      }}
+    >
       <SheetTrigger asChild>
-        <Button className=' bg-gradient-to-r from-indigo-600 to-sky-300 w-full px-9 py-7 rounded-2xl text-slate-50 font-semibold text-xl hover:bg-indigo-500'>
+        <Button
+          className=' bg-gradient-to-r from-indigo-600 to-sky-300 w-full px-9 py-7 rounded-2xl text-slate-50 font-semibold text-xl hover:bg-indigo-500'
+          onClick={() => setOpen(true)}
+        >
           Book now
         </Button>
       </SheetTrigger>
@@ -74,8 +182,9 @@ export function BookRoomForm() {
                       Room
                     </FormLabel>
                     <Select
+                      disabled
                       onValueChange={field.onChange}
-                      defaultValue={field.value?.id}
+                      defaultValue={id ?? field?.value}
                     >
                       <FormControl>
                         <SelectTrigger className='border-muted-foreground outline-1'>
@@ -83,12 +192,8 @@ export function BookRoomForm() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {Array.from({
-                          length: 10,
-                        }).map((_, i) => (
-                          <SelectItem value={String(i)}>{`Room ${
-                            i + 1
-                          }`}</SelectItem>
+                        {roomsList?.map((r: { title: string; id: string }) => (
+                          <SelectItem value={r?.id}>{r?.title}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -138,9 +243,12 @@ export function BookRoomForm() {
                             selected={field.value}
                             onSelect={field.onChange}
                             numberOfMonths={2}
-                            disabled={{
-                              before: new Date(),
-                            }}
+                            disabled={[
+                              ...disableDates,
+                              {
+                                before: new Date(),
+                              },
+                            ]}
                           />
                         </PopoverContent>
                       </Popover>
@@ -173,7 +281,7 @@ export function BookRoomForm() {
                           </FormControl>
                           <SelectContent>
                             {Array.from({
-                              length: 6,
+                              length: maxCapacity ?? 6,
                             }).map((_, i) => (
                               <SelectItem value={String(i)}>{` ${
                                 i + 1
@@ -214,6 +322,36 @@ export function BookRoomForm() {
                   />
                 </div>
               </div>
+              <div>
+                <Label htmlFor='description' className='text-lg'>
+                  Observation
+                </Label>
+                <Textarea
+                  className='h-28 border-gray-600'
+                  placeholder='ex. space for my dog'
+                />
+              </div>
+              {/* <div className='p-4 bg-gray-300 flex items-center justify-center min-h-32 rounded-lg'> */}
+              <div className='flex flex-col items-center justify-center gap-4 p-4 bg-gray-100 rounded-lg dark:bg-gray-800'>
+                <h2 className='text-lg font-medium text-gray-700 dark:text-gray-300'>
+                  Order Total
+                </h2>
+                <div className='text-4xl font-bold text-gray-900 dark:text-gray-50'>
+                  ${totalPrice}
+                </div>
+              </div>
+              {/* </div> */}
+              <Separator />
+              <SheetFooter>
+                {/* <SheetClose asChild> */}
+                <Button type='submit' className='w-1/3 mb-4 py-6'>
+                  {isPending && (
+                    <FaSpinner className='mr-2 h-4 w-4 animate-spin' />
+                  )}
+                  <span>{isPending ? 'Booking' : 'Book'}</span>
+                </Button>
+                {/* </SheetClose> */}
+              </SheetFooter>
             </form>
           </Form>
           {/* <div>
@@ -246,11 +384,6 @@ export function BookRoomForm() {
             <Input id='username' value='@peduarte' className='col-span-3' />
           </div> */}
         </div>
-        <SheetFooter>
-          <SheetClose asChild>
-            <Button type='submit'>Save changes</Button>
-          </SheetClose>
-        </SheetFooter>
       </SheetContent>
     </Sheet>
   );

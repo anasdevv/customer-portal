@@ -1,10 +1,13 @@
+'use client';
 import { BookingHistory } from '@/components/booking-history';
 import { OrderFood } from '@/components/order-food';
 import Room from '@/components/room';
 import { Rooms } from '@/components/rooms';
+import { Spinner } from '@/components/ui/Spinner';
 import { Tabs } from '@/components/ui/tabs';
 import Image from 'next/image';
-import { Suspense } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
 
 const DummyContent = () => {
   return (
@@ -24,16 +27,28 @@ export type PageProps = {
   searchParams: { [key: string]: string | undefined };
 };
 export default function Page(props: PageProps) {
-  console.log(props);
+  console.log('props ', props);
+  // const []
+  const pathname = usePathname();
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const handleReload = () => {
+      setIsLoading(true);
+    };
+    window.addEventListener('beforeunload', handleReload);
+    return () => {
+      window.removeEventListener('beforeunload', handleReload);
+    };
+  }, []);
+  const [_, __, path, roomId] = pathname.split('/');
+  console.log('path ', path, ' roomID ', roomId);
+
   const tabs = [
     {
       title: 'Rooms',
       value: 'rooms',
-      content: (
-        <Suspense fallback={<div>loading....</div>}>
-          <Rooms searchParams={props.searchParams} />
-        </Suspense>
-      ),
+      content: <Rooms />,
     },
     {
       title: 'Order Food',
@@ -47,8 +62,9 @@ export default function Page(props: PageProps) {
     },
     {
       title: 'RoomDetails',
-      value: 'room-details',
+      value: 'room',
       content: <Room />,
+      disabled: !(path === 'room' && Boolean(roomId)),
     },
     {
       title: 'Random',
@@ -65,7 +81,13 @@ export default function Page(props: PageProps) {
   return (
     <div className='px-8 mb-6'>
       <div className='h-screen [perspective:1000px] relative b flex flex-col  mx-auto w-full  items-start justify-start my-4  mb-10 pb-10'>
-        <Tabs tabs={tabs} />
+        {isLoading ? (
+          <div className='w-full h-screen flex items-center justify-center text-white'>
+            <Spinner />
+          </div>
+        ) : (
+          <Tabs tabs={tabs} initalActive={tabs.find((t) => t.value === path)} />
+        )}
       </div>
     </div>
   );

@@ -1,8 +1,10 @@
-import './globals.css';
+import { Toaster } from '@/components/ui/toaster';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import './globals.css';
 import QueryProiver from './providers/react-query';
-import { Toaster } from '@/components/ui/toaster';
+import AxiosInterceptor from './providers/AxiosInterceptor';
+import { UserProvider } from './providers/UserContext';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -16,15 +18,17 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // console.log(children);
   return (
     <html lang='en'>
-      <QueryProiver>
-        <body className={' bg-zinc-900'}>
-          <main>{children}</main>
-          <Toaster />
-        </body>
-      </QueryProiver>
+      <UserProvider>
+        <QueryProiver>
+          <AxiosInterceptor />
+          <body className={' bg-zinc-900'}>
+            <main>{children}</main>
+            <Toaster />
+          </body>
+        </QueryProiver>
+      </UserProvider>
     </html>
   );
 }

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { axiosClient } from './axiosClient';
 
 class FeatruesService {
   protected url: string;
@@ -13,7 +14,7 @@ class FeatruesService {
   public async getAll() {
     try {
       console.log('this ', this.url);
-      const response = await axios.get('http://localhost:3003/features');
+      const response = await axiosClient.get('http://localhost:3003/features');
       console.log('response ', response.data);
       return response.data;
     } catch (error: any) {

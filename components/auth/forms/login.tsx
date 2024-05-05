@@ -1,5 +1,7 @@
 'use client';
+import { useUser } from '@/app/providers/UserContext';
 import { loginSchema } from '@/app/schema/loginSchema';
+// import useStore from '@/app/store/useStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,9 +23,12 @@ export const UserLogin = () => {
   } = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
   });
+  const { login } = useUser();
+  // const router = useRouter();
   const { toast } = useToast();
   const router = useRouter();
   const {
+    data: loggedInUser,
     mutate: loginUser,
     isPending,
     status,
@@ -34,6 +39,12 @@ export const UserLogin = () => {
       toast({
         title: 'Logged in  ✅',
       });
+      console.log('here ');
+      login({
+        id: data?.id ?? '',
+        token: data?.token ?? '',
+      });
+      router.push('/tabs/rooms');
     },
     onError: (err: any) => {
       console.log('err ', err);
@@ -46,8 +57,9 @@ export const UserLogin = () => {
     },
   });
   async function onSubmit(data: z.infer<typeof loginSchema>) {
-    console.log('data ', data);
+    console.log('data 2', data);
     loginUser(data);
+    console.log('loggedin user ', loggedInUser);
   }
   const isLoading = false;
   return (

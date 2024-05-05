@@ -1,24 +1,8 @@
 import { columns } from '../ui/columns';
 import { DataTable } from '../ui/data-table';
 import { UserNav } from '../ui/user-nav';
-import { promises as fs } from 'fs';
-import path from 'path';
-import { taskSchema } from './data/schema';
-import { z } from 'zod';
 
-// Simulate a database read for tasks.
-async function getBookings() {
-  const data = await fs.readFile(
-    path.join(process.cwd(), 'components/booking-history/data/bookings.json')
-  );
-
-  const Bookings = JSON.parse(data.toString());
-
-  return Bookings;
-}
-
-export const BookingHistory = async () => {
-  const Bookings = await getBookings();
+export const BookingHistory = () => {
   return (
     <div className=' bg-gradient-to-br from-slate-700 to-slate-950 flex'>
       <div className='h-full bg-slate-850 w-[32rem]'>
@@ -38,7 +22,7 @@ export const BookingHistory = async () => {
           </div>
         </div>
         <div className='bg-white'>
-          <DataTable data={Bookings} columns={columns} />
+          {/* <DataTable data={Bookings} columns={columns} /> */}
         </div>
       </div>
     </div>

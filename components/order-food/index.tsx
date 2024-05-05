@@ -16,24 +16,34 @@ import { useState } from 'react';
 import { FoodItemType } from '@/lib/types';
 import { TrashIcon } from '@radix-ui/react-icons';
 import { TbMoodEmptyFilled } from 'react-icons/tb';
+import { usePathname } from 'next/navigation';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import BookingService from '@/service/booking';
+import OrderfoodService from '@/service/order-food';
+import { useToast } from '../ui/use-toast';
 export interface OrderFoodItem extends FoodItemType {
   quantity: number;
 }
 export const OrderFood = () => {
+  const pathname = usePathname();
+
+  const [_, __, path] = pathname.split('/');
+  // if (path !== 'order-food') return <div />;
   const [orderItems, setOrderItems] = useState<OrderFoodItem[]>();
 
   const addItemToOrder = (item: OrderFoodItem) => {
+    console.log('item ', item, ' orders ', orderItems);
     const existingItemIndex = orderItems?.findIndex(
       (orderItem) => orderItem.id === item.id
     );
-
-    if (existingItemIndex && existingItemIndex !== -1) {
+    console.log('existing item ', existingItemIndex);
+    if (existingItemIndex !== undefined && existingItemIndex !== -1) {
       console.log('here');
       const updatedOrderItems = [...(orderItems ?? [])];
-      updatedOrderItems[existingItemIndex].quantity += 1;
-      setOrderItems(updatedOrderItems);
+      updatedOrderItems[existingItemIndex as number].quantity += 1;
+      setOrderItems(() => updatedOrderItems);
     } else {
-      setOrderItems([...(orderItems ?? []), { ...item, quantity: 1 }]);
+      setOrderItems(() => [...(orderItems ?? []), { ...item, quantity: 1 }]);
     }
   };
 
@@ -61,7 +71,30 @@ export const OrderFood = () => {
     );
     setOrderItems(updatedOrderItems);
   };
-
+  const { data: bookingId } = useQuery({
+    queryKey: [],
+    staleTime: 0,
+    queryFn: () => BookingService.getCurrentBooking(),
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+  });
+  const { mutate: placeOrder, isPending } = useMutation({
+    mutationFn: OrderfoodService.orderFood,
+    onError: (error: any) => {
+      toast({
+        title: error?.message ?? 'something went wrong',
+        description: 'Opps! request failed',
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: 'Order placed successfully 🎉🎉 ',
+        description: `We're thrilled to place your order`,
+      });
+    },
+  });
+  const { toast } = useToast();
+  console.log('hello from order food', bookingId);
   return (
     <div className='flex space-x-2 w-full overflow-hidden relative h-full rounded-2xl p-3  font-bold text-white bg-gradient-to-br from-slate-700 to-slate-950 pb-4'>
       {/* <Filters /> */}
@@ -143,6 +176,22 @@ export const OrderFood = () => {
             <Button
               onClick={() => {
                 console.log('hi');
+                if (!bookingId || !bookingId?.length) {
+                  toast({
+                    title: 'Opps!',
+                    description:
+                      'You can only order food when your booking has started',
+                  });
+                  return;
+                }
+                placeOrder({
+                  bookingId: bookingId[0].id,
+                  orders: orderItems.map((o) => ({
+                    id: o.id,
+                    quantity: o.quantity,
+                  })),
+                });
+                console.log('order items ', orderItems);
               }}
               size='sm'
               className='w-full py-6 bg transform transition hover:scale-95 bg-gradient-to-r from-indigo-300 to-sky-500'
@@ -165,7 +214,9 @@ export const OrderFood = () => {
           </div>
         </div>
         <ScrollArea className='h-[35rem] pb-10 '>
-          <FoodItems addItemToOrder={addItemToOrder} />
+          {path === 'order-food' ? (
+            <FoodItems addItemToOrder={addItemToOrder} />
+          ) : null}
         </ScrollArea>
         {/* <h1 className='text-2xl'>Rooms </h1> */}
       </div>
@@ -211,12 +262,12 @@ function PlusIcon(props: any) {
   );
 }
 
-export function EmptyState() {
+export function EmptyState({ message }: { message?: string }) {
   return (
     <div className='flex flex-col items-center justify-center gap-4'>
-      <div className='w-[200px] h-[200px] bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center'>
+      <div className='w-[100px] h-[100px] bg-blue-100 dark:bg-gray-800 rounded-full flex items-center justify-center'>
         <svg
-          className='w-[100px] h-[100px] text-gray-400 dark:text-gray-500'
+          className='w-[50px] h-[50px] text-gray dark:text-gray-500'
           fill='none'
           stroke='currentColor'
           strokeLinecap='round'
@@ -230,7 +281,7 @@ export function EmptyState() {
       <div className='text-center space-y-2'>
         <h3 className='text-2xl font-bold'>Nothing to see here</h3>
         <p className='text-gray-500 dark:text-gray-400'>
-          Looks like you haven't added anything yet.
+          {message ? message : `Looks like you haven't added anything yet.`}
         </p>
       </div>
     </div>

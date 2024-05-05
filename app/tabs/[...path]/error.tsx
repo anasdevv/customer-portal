@@ -16,7 +16,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <main className='flex h-full flex-col items-center justify-center text-white'>
+    <main className='flex h-screen w-full flex-col items-center justify-center text-white'>
       <h2 className='text-center'>
         {error?.message ?? 'Something went wrong!'}{' '}
       </h2>

@@ -17,5 +17,5 @@ export const BookingformSchema = z.object({
       'Start date must be in the future'
     ),
   numGuests: z.string().min(1),
-  breakfastIncluded: z.boolean(),
+  breakfastIncluded: z.boolean().optional(),
 });

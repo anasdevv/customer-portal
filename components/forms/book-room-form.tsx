@@ -55,19 +55,48 @@ type Room = {
   maxCapacity?: number;
   regularPrice?: number;
   discount?: number;
+  edit?: boolean;
+  breakfastIncluded?: boolean;
+  numGuests?: number;
+  startDate?: Date;
+  endDate?: Date;
+  setEdit?: (val: boolean) => void;
+  description?: string;
 };
+interface BookRoomProps {
+  room: Room;
+  edit?: boolean;
+}
 export function BookRoomForm({
   id,
   maxCapacity,
   regularPrice,
   discount,
+  breakfastIncluded,
+  numGuests,
+  edit = false,
+  startDate,
+  description,
+  endDate,
+  setEdit,
 }: Room) {
-  const [open, setOpen] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(() => (edit ? true : false));
   const query = useQueryClient();
   const { toast } = useToast();
   const form = useForm<z.infer<typeof BookingformSchema>>({
     defaultValues: {
       room: id,
+      ...(edit
+        ? {
+            breakfastIncluded,
+            numGuests: numGuests?.toString() ?? '1',
+            descritption: description,
+            date: {
+              from: startDate ? new Date(startDate) : new Date(),
+              to: endDate ? new Date(endDate) : new Date(),
+            },
+          }
+        : {}),
     },
     resolver: zodResolver(BookingformSchema),
   });
@@ -91,7 +120,7 @@ export function BookRoomForm({
     mutationFn: BookingService.addBooking,
     onSuccess: () => {
       query.invalidateQueries({
-        queryKey: ['unavailable-dates'],
+        queryKey: ['unavailable-dates', 'user-bookings'],
       });
       toast({
         title: 'Booking added successfully 💯 👍 📅',
@@ -138,8 +167,9 @@ export function BookRoomForm({
       startDate: new Date(data.date.from),
       roomId: data.room,
       endDate: new Date(data.date.to),
-      hasBreakfast: data.breakfastIncluded,
+      hasBreakfast: data?.breakfastIncluded ?? false,
       numNights: differenceInDays(data.date.to, data.date.from),
+      numGuests: Number(data?.numGuests),
       totalPrice,
       observations: data.descritption,
     });
@@ -152,6 +182,9 @@ export function BookRoomForm({
       onOpenChange={(open) => {
         console.log('open changing ', open);
         setOpen(open);
+        if (setEdit) {
+          setEdit(open);
+        }
         form.reset();
       }}
     >
@@ -165,7 +198,9 @@ export function BookRoomForm({
       </SheetTrigger>
       <SheetContent className='bg-white border-none'>
         <SheetHeader className=''>
-          <SheetTitle className=' mx-auto'>Book Room Now !</SheetTitle>
+          <SheetTitle className=' mx-auto'>
+            {edit ? 'Update Booking ' : 'Book Room'} Now !
+          </SheetTitle>
         </SheetHeader>
         <div className='grid gap-2 py-4 '>
           <Form {...form}>
@@ -244,7 +279,7 @@ export function BookRoomForm({
                             onSelect={field.onChange}
                             numberOfMonths={2}
                             disabled={[
-                              ...disableDates,
+                              ...(disableDates ?? []),
                               {
                                 before: new Date(),
                               },
@@ -348,7 +383,16 @@ export function BookRoomForm({
                   {isPending && (
                     <FaSpinner className='mr-2 h-4 w-4 animate-spin' />
                   )}
-                  <span>{isPending ? 'Booking' : 'Book'}</span>
+                  {/* todo replace isPending with isUpdatePending  */}
+                  <span>
+                    {edit
+                      ? isPending
+                        ? 'Updating'
+                        : 'Update'
+                      : isPending
+                      ? 'Booking ...'
+                      : 'Book'}
+                  </span>
                 </Button>
                 {/* </SheetClose> */}
               </SheetFooter>

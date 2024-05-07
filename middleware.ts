@@ -38,7 +38,7 @@ export async function middleware(request: NextRequest, resp: NextResponse) {
     token?.value &&
     isAuthenticated
   ) {
-    return NextResponse.redirect(new URL('/rooms', request.url));
+    return NextResponse.redirect(new URL('/tabs/rooms', request.url));
   }
   return response;
 }

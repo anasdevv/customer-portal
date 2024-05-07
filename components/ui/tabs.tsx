@@ -37,6 +37,7 @@ export const Tabs = ({
   const pathname = usePathname();
   const { logout } = useUser();
   const [_, __, path, roomId] = pathname.split('/');
+  console.log('path', path);
   const [tabs, setTabs] = useState<Tab[]>(propTabs);
   const router = useRouter();
   const moveSelectedTabToTop = (idx: number) => {
@@ -46,11 +47,11 @@ export const Tabs = ({
     setTabs(newTabs);
     setActive(newTabs[0]);
   };
-  console.log('roomId ', roomId);
+  // console.log('roomId ', roomId);
   useEffect(() => {
     if (path === 'rooms') return;
     const idx = tabs.findIndex((t) => t.value === path);
-
+    console.log('inside effect');
     console.log('idx ', idx, ' path ', path);
     if (idx >= 0) {
       moveSelectedTabToTop(idx);

@@ -33,6 +33,7 @@ export interface BookingType {
   hasBreakfast: boolean;
   totalPrice: number;
   observations?: string;
+  numGuests?: number;
 }
 // export interface FeatureType {}
 export interface Option {

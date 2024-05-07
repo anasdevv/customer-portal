@@ -18,6 +18,16 @@ class BookingService {
       throw error?.response?.data;
     }
   }
+  public async getBookingsByUserId(userId: string) {
+    try {
+      const response = await axiosClient.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/booking/user/${userId}`
+      );
+      return response.data;
+    } catch (error: any) {
+      throw error?.response?.data ?? error;
+    }
+  }
   public async getUnavailableDates(roomId: string) {
     try {
       const response = await axiosClient.get(

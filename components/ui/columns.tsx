@@ -8,11 +8,13 @@ import { Checkbox } from './checkbox';
 import { Badge } from './badge';
 import { Task } from '../booking-history/data/schema';
 import { labels, priorities, statuses } from '../booking-history/data/data';
+import { format } from 'date-fns';
 interface IBooking {
   id: string;
   roomTitle: string;
+  startDate: string;
   status: string;
-  price: string;
+  totalPrice: string;
   duration: string;
 }
 export const columns: ColumnDef<IBooking>[] = [
@@ -40,15 +42,7 @@ export const columns: ColumnDef<IBooking>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-  {
-    accessorKey: 'id',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Id' />
-    ),
-    cell: ({ row }) => <div className='w-[80px]'>{row.getValue('id')}</div>,
-    enableSorting: false,
-    enableHiding: false,
-  },
+
   {
     accessorKey: 'roomTitle',
     header: ({ column }) => (
@@ -60,7 +54,7 @@ export const columns: ColumnDef<IBooking>[] = [
       return (
         <div className='flex space-x-2'>
           {/* {label && <Badge variant='outline'>{label.label}</Badge>} */}
-          <span className='max-w-[500px] truncate font-medium'>
+          <span className='max-w-[300px] truncate font-medium line-clamp-1'>
             {row.getValue('roomTitle')}
           </span>
         </div>
@@ -83,8 +77,8 @@ export const columns: ColumnDef<IBooking>[] = [
       }
 
       return (
-        <div className='flex w-[100px] items-center'>
-          {status.icon && (
+        <div className='flex w-[120px] items-center'>
+          {status?.icon && (
             <status.icon className='mr-2 h-4 w-4 text-muted-foreground' />
           )}
           <span>{status.label}</span>
@@ -96,14 +90,14 @@ export const columns: ColumnDef<IBooking>[] = [
     },
   },
   {
-    accessorKey: 'price',
+    accessorKey: 'totalPrice',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Price' />
     ),
     cell: ({ row }) => {
-      const price: string = row.getValue('price');
+      const totalPrice: string = row.getValue('totalPrice');
 
-      if (!price) {
+      if (!totalPrice) {
         return null;
       }
 
@@ -111,13 +105,26 @@ export const columns: ColumnDef<IBooking>[] = [
         <div className='flex items-center'>
           <span className='mr-2 h-4 w-4 text-muted-foreground'> $</span>
 
-          <span>{price}</span>
+          <span>{totalPrice}</span>
         </div>
       );
     },
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id));
     },
+  },
+  {
+    accessorKey: 'startDate',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Start Date' />
+    ),
+    cell: ({ row }) => (
+      <div className='w-[100px]'>
+        {format(row.getValue('startDate'), 'MMMM do,yyyy')}
+      </div>
+    ),
+    enableSorting: false,
+    enableHiding: false,
   },
   {
     accessorKey: 'duration',
@@ -133,7 +140,7 @@ export const columns: ColumnDef<IBooking>[] = [
 
       return (
         <div className='flex items-center'>
-          <span className='mr-2 h-4 w-4 text-muted-foreground'> $</span>
+          {/* <span className='mr-2 h-4 w-4 text-muted-foreground'> $</span> */}
 
           <span>{duration}</span>
         </div>
